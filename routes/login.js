@@ -15,14 +15,45 @@ router.post('/',function(req,res){
 
         console.log("The file was saved!");
     });*/
+
+    var con = require("../db/datadb");
     var username = req.body.username;
     var password = req.body.password;
-    res.cookie("login","abcdefg1234");
-    res.cookie("username",username);
-    res.cookie("password",password);
+    con.query("USE datadb",function(err){
+        con.query("SELECT name FROM users WHERE name = '"+username+"' AND pass = '"+password+"'",function(err,result){
+            if(err) {
+                res.sendStatus(500);
+                throw err;
+            }
+            //check result for user existing with right password
+            if(JSON.parse(JSON.stringify(result)).length>0){
+                var sql = "REPLACE INTO logged_in (name,cookie) VALUES ?";
+                var cookie = "cookme";
+                var values = [
+                    [ username,cookie]
+                ];
+                con.query(sql,[values],function(err){
+                    if(err) {
+                        res.sendStatus(500);
+                        throw err;
+                    }
+                    res.cookie("login",cookie);
+                    res.cookie("username",username);
+                    res.sendStatus(201);
+
+                });
+            }
+            else{
+                console.log("couldn't login user: "+username);
+                res.sendStatus(400);
+            }
+        });
+
+    });
+
     //res.cookie('rememberme', '1', { expires: new Date(Date.now() + 900000), httpOnly: true });
 
-    res.sendStatus(201);
+
 
 });
 

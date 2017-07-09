@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+'use strict';
 /**
  * Module dependencies.
  */
@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('dappleserver:server');
 var http = require('http');
+var dbsetup = require('../db/startdb');
 
 /**
  * Get port from environment and store in Express.
@@ -14,6 +15,9 @@ var http = require('http');
 
 var port = normalizePort(process.env.PORT || '80');
 app.set('port', 80);
+
+
+//db.connect();
 
 /**
  * Create HTTP server.
